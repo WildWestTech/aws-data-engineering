@@ -1,5 +1,4 @@
 # Medallion Architecture: Bronze, Silver, Gold
-
 resource "aws_s3_bucket" "wildwesttech-bucket" {
   for_each = toset(var.bucket_list)
   bucket = "wildwesttech-${each.value}-${var.env}"
