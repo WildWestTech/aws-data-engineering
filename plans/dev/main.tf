@@ -23,3 +23,31 @@ provider "aws" {
     profile = "${var.profile}"
     region  = "${var.region}"
 }
+
+#===========================================================
+# for docker
+# we'll use docker for deploying lambdas
+#===========================================================
+terraform {
+    required_providers {
+        docker = {
+            source = "kreuzwerker/docker"
+            version = "2.15.0"
+        }
+    }
+}
+
+#===========================================================
+# temporary credentials for working with docker
+# we'll need this when we deploy our lambdas
+#===========================================================
+data aws_ecr_authorization_token this {}
+
+provider "docker" {
+  host    = "npipe:////.//pipe//docker_engine"
+  registry_auth {
+    address  = data.aws_ecr_authorization_token.this.proxy_endpoint
+    username = data.aws_ecr_authorization_token.this.user_name
+    password = data.aws_ecr_authorization_token.this.password
+  }
+}
