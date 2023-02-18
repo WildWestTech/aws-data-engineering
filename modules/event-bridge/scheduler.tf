@@ -13,4 +13,6 @@ resource "aws_scheduler_schedule" "alphavantage-kickoff" {
     arn      = "arn:aws:lambda:${var.region}:${var.account}:function:alphavantage-kickoff-lambda-${var.env}"
     role_arn = "arn:aws:iam::${var.account}:role/scheduler-service-role"
   }
+
+  state = "ENABLED"
 }
