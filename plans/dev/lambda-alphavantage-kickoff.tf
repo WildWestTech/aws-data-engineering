@@ -4,21 +4,21 @@
 # basically, i want to rebuild the lambda, any time there is an update to any of the lambda code
 
 # create a variable pointing to where the docker folder lives
-variable "alphavantage_folder" {
+variable "alphavantage-kickoff_folder" {
     type = string
-    default = "..\\..\\modules\\lambdas\\alphavantage\\docker-image"
+    default = "..\\..\\modules\\lambdas\\alphavantage-kickoff\\docker-image"
 }
 
 # iterate through the folder and hash the contents
 locals {
-    alphavantage_hash = sha1(join("", [for f in fileset(var.alphavantage_folder, "*"): filesha1("${var.alphavantage_folder}/${f}")]))
+    alphavantage-kickoff_hash = sha1(join("", [for f in fileset(var.alphavantage-kickoff_folder, "*"): filesha1("${var.alphavantage-kickoff_folder}/${f}")]))
 }
 
 #==================================================
 
 # create an elastic container repository for the lambda image
-resource "aws_ecr_repository" "alphavantage-lambda" {
-    name = "alphavantage-lambda-${var.env}"
+resource "aws_ecr_repository" "alphavantage-kickoff-lambda" {
+    name = "alphavantage-kickoff-lambda-${var.env}"
     force_delete = true
 }
 
@@ -29,25 +29,25 @@ resource "aws_ecr_repository" "alphavantage-lambda" {
 # now, if we update our lambda code, that code repo is hashed.  i'm using that hash as my version tag
 # so when the code changes, the hash changes.  when the hash changes, the lamdbda is re-built and re-deployed
 
-resource "docker_registry_image" "alphavantage-lambda" {
-    name = "${aws_ecr_repository.alphavantage-lambda.repository_url}:${local.alphavantage_hash}"
+resource "docker_registry_image" "alphavantage-kickoff-lambda" {
+    name = "${aws_ecr_repository.alphavantage-kickoff-lambda.repository_url}:${local.alphavantage-kickoff_hash}"
     build {
-        context = var.alphavantage_folder
+        context = var.alphavantage-kickoff_folder
     }
     keep_remotely = false
     depends_on = [
-      aws_ecr_repository.alphavantage-lambda
+      aws_ecr_repository.alphavantage-kickoff-lambda
     ]
 }
 
-module "lambdas-alphavantage" {
-    source          = "../../modules/lambdas/alphavantage"
+module "lambdas-alphavantage-kickoff" {
+    source          = "../../modules/lambdas/alphavantage-kickoff"
     env             = "${var.env}"
     account         = "${var.account}"
     region          = "${var.region}"
-    lambda_version  = "${local.alphavantage_hash}"
+    lambda_version  = "${local.alphavantage-kickoff_hash}"
     depends_on      = [
-        docker_registry_image.alphavantage-lambda,
+        docker_registry_image.alphavantage-kickoff-lambda,
         module.sns-sqs
         ]
 }
