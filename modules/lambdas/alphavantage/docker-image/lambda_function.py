@@ -22,7 +22,7 @@ def lambda_handler(event, context):
         symbol  = json.loads(message)['symbol']
     # Secrets Manager for AlphaVantage - secret was created manually in console
         session     = boto3.session.Session()
-        client      = session.client(service_name='secretsmanager',region_name='us-east-1')
+        client      = session.client(service_name='secretsmanager',region_name=region)
         response    = client.get_secret_value(SecretId='AlphaVantage')
         secret      = json.loads(response['SecretString'])
         out['get-secret'] = 'success'

@@ -40,7 +40,7 @@ resource "docker_registry_image" "alphavantage-lambda" {
     ]
 }
 
-module "lambdas" {
+module "lambdas-alphavantage" {
     source          = "../../modules/lambdas/alphavantage"
     env             = "${var.env}"
     account         = "${var.account}"
