@@ -9,6 +9,7 @@ variable "bucket_list" {
     "silver",
     "gold",
     "glue",
-    "emr-studio-workspace"
+    "emr-studio-workspace",
+    "service-catalog"
     ]
 }
