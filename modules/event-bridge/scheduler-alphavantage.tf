@@ -6,6 +6,7 @@ resource "aws_scheduler_schedule" "alphavantage-kickoff" {
     mode = "OFF"
   }
 
+  #Run daily at 8:00 AM, EST
   schedule_expression = "cron(0 8 * * ? *)"
   schedule_expression_timezone = "America/Louisville"
 

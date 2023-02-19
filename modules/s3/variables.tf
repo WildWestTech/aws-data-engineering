@@ -4,5 +4,11 @@ variable "env" {
 
 variable "bucket_list" {
    type= list
-   default= ["bronze","silver","gold","glue"]
+   default= [
+    "bronze",
+    "silver",
+    "gold",
+    "glue",
+    "emr-studio-workspace"
+    ]
 }

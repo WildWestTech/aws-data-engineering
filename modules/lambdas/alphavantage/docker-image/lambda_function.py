@@ -10,16 +10,17 @@ def lambda_handler(event, context):
     out = {}
     try:
     # Set the environment variables
-        env     = os.environ['env']
-        region  = os.environ['region']
-        account = os.environ['account']
+        env         = os.environ['env']
+        region      = os.environ['region']
+        account     = os.environ['account']
     # Prep Date Parts For s3 Hierarchy
-        EST  = pytz.timezone('America/Louisville')
-        date = datetime.now(EST).strftime('%Y%m%d')
+        EST         = pytz.timezone('America/Louisville')
+        date        = datetime.now(EST).strftime('%Y%m%d')
     # Parse the Event
         receiptHandle = event['Records'][0]['receiptHandle']
-        message = json.loads(event['Records'][0]['body'])['Message']
-        symbol  = json.loads(message)['symbol']
+        message     = json.loads(event['Records'][0]['body'])['Message']
+        symbol      = json.loads(message)['symbol']
+        out['symbol'] = symbol
     # Secrets Manager for AlphaVantage - secret was created manually in console
         session     = boto3.session.Session()
         client      = session.client(service_name='secretsmanager',region_name=region)
@@ -31,13 +32,13 @@ def lambda_handler(event, context):
         function    = 'TIME_SERIES_INTRADAY'
         interval    = '5min'
     # Call API
-        url = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={apikey}'
-        r = requests.get(url)
-        data = r.json()
+        url         = f'https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={apikey}'
+        r           = requests.get(url)
+        data        = r.json()
         out['call-api'] = 'success'
     # Write to s3    
-        s3 = boto3.client('s3')
-        Key=f"alphavantage_bronze/{symbol}/dataload={date}/{symbol}.json"
+        s3          = boto3.client('s3')
+        Key         =f"alphavantage_bronze/{symbol}/dataload={date}/{symbol}.json"
         s3.put_object(
             Body= json.dumps(data), 
             Bucket=f'wildwesttech-bronze-{env}',
