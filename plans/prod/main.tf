@@ -24,6 +24,19 @@ provider "aws" {
     region  = "${var.region}"
 }
 
+provider "aws" {
+    alias   = "management"
+    profile = "643000937293_AdministratorAccess"
+    region  = "${var.region}"
+}
+
+data "aws_ssoadmin_instances" "management" {
+  provider = "aws.management"
+}
+
+locals {
+  identity_store_id = data.aws_ssoadmin_instances.management.identity_store_ids[0]
+}
 #===========================================================
 # for docker
 # we'll use docker for deploying lambdas
