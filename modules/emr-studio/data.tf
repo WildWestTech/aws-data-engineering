@@ -49,3 +49,12 @@ data "aws_identitystore_group" "admins" {
     attribute_value = "admins"
   }
 }
+
+#Identify the Group, which we will Assign these Permissions To
+data "aws_identitystore_group" "dataengineers" {
+  identity_store_id = var.identity_store_id
+  filter {
+    attribute_path  = "DisplayName"
+    attribute_value = "dataengineers"
+  }
+}

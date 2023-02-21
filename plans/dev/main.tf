@@ -31,7 +31,7 @@ provider "aws" {
 }
 
 data "aws_ssoadmin_instances" "management" {
-  provider = "aws.management"
+  provider = aws.management
 }
 
 locals {
