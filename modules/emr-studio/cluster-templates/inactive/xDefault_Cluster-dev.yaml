@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  ClusterName:
+    Type: "String"
+    Default: "Default_Cluster"
+  EmrRelease:
+    Type: "String"
+    Default: "emr-6.4.0"
+    AllowedValues:
+    - "emr-6.4.0"
+  ClusterInstanceType:
+    Type: "String"
+    Default: "m5.xlarge"
+    AllowedValues:
+    - "m5.xlarge"
+    - "m5.2xlarge"
+    - "m5.4xlarge"
+  CoreInstanceCount:
+    Type: Number
+    Default: 1
+    AllowedValues:
+    - 1
+    - 2
+    - 3
+
+Resources:
+  EmrCluster:
+    Type: AWS::EMR::Cluster
+    Properties:
+      Applications:
+      - Name: Spark
+      - Name: Livy
+      - Name: JupyterEnterpriseGateway
+      - Name: Hive
+      - Name: Presto
+      Configurations:
+      - Classification: presto-connector-hive
+        ConfigurationProperties:
+          hive.metastore: glue
+      EbsRootVolumeSize: '15'
+      AutoTerminationPolicy:
+        IdleTimeout: 7200
+      Name: !Ref ClusterName
+      Tags:
+        - Key: type
+          Value: admin
+      JobFlowRole: EMR_EC2_Admin_Role
+      ServiceRole: EMR_DefaultRole
+      ReleaseLabel: !Ref EmrRelease
+      VisibleToAllUsers: true
+      LogUri: 
+        Fn::Sub: 's3://wildwesttech-logs-dev/elasticmapreduce/'
+      Instances:
+        TerminationProtected: false
+        Ec2SubnetId: 'subnet-099efa89d64903f8b'
+        MasterInstanceGroup:
+          InstanceCount: 1
+          InstanceType: !Ref ClusterInstanceType
+        CoreInstanceGroup:
+          InstanceCount: !Ref CoreInstanceCount
+          InstanceType: !Ref ClusterInstanceType
+          Market: ON_DEMAND
+          Name: Core
+        
+ 
+Outputs:
+  ClusterId:
+    Value:
+      Ref: EmrCluster
+    Description: The ID of the EMR Cluster
