@@ -10,6 +10,7 @@ variable "bucket_list" {
     "gold",
     "glue",
     "emr-studio-workspace",
+    "emr-studio-resources",
     "service-catalog",
     "logs"
     ]

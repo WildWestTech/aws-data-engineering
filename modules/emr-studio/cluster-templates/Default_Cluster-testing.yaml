@@ -1,5 +1,3 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -20,7 +18,7 @@ Parameters:
     AllowedValues:
     - "m5.xlarge"
     - "m5.2xlarge"
-    
+
 Resources:
   EmrCluster:
     Type: AWS::EMR::Cluster
@@ -40,12 +38,21 @@ Resources:
         Fn::Sub: 's3://aws-logs-${AWS::AccountId}-${AWS::Region}/elasticmapreduce/'
       Instances:
         TerminationProtected: false
-        Ec2SubnetId: 'subnet-099efa89d64903f8b'
+        Ec2SubnetId: !Ref SubnetId
         MasterInstanceGroup:
           InstanceCount: 1
           InstanceType: !Ref ClusterInstanceType
+      AutoTerminationPolicy:
+        IdleTimeout: 7200
+      Configurations:
+      - Classification: livy-conf
+        Properties:
+          livy.server.session.timeout: "6h"
+      BootstrapActions:
+      - Name: Install Additional Packages
+        ScriptBootstrapAction:
+          Path: s3://your-bucket-name/your-script-name.sh
 
-Outputs:
   ClusterId:
     Value:
       Ref: EmrCluster
