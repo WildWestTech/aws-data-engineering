@@ -4,3 +4,5 @@ resource "aws_emr_studio_session_mapping" "DataEngineering" {
   identity_id        = data.aws_identitystore_group.dataengineers.id
   session_policy_arn = "arn:aws:iam::${var.account}:policy/EMRStudio_Advanced_User_Policy"
 }
+
+#session_policy_arn = "arn:aws:iam::${var.account}:policy/EMRStudio_Advanced_User_Policy"

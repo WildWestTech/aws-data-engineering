@@ -19,7 +19,7 @@ data "aws_security_group" "emr_workspace_security_group" {
 data "aws_subnet" "Private-1A" {
   filter {
     name   = "tag:Name"
-    values = ["Private-1C"]
+    values = ["Private-1A"]
   }
 }
 
