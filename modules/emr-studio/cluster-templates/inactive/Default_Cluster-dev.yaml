@@ -38,6 +38,13 @@ Resources:
       - Classification: presto-connector-hive
         ConfigurationProperties:
           hive.metastore: glue
+      - Classification: livy-conf
+        ConfigurationProperties:
+          livy.server.session.timeout: '8h'
+      BootstrapActions:
+      - Name: Install Additional Packages
+        ScriptBootstrapAction:
+          Path: s3://wildwesttech-emr-studio-resources-dev/bootstrap-scripts/bootstrap.sh
       EbsRootVolumeSize: '15'
       AutoTerminationPolicy:
         IdleTimeout: 7200

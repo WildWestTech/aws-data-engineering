@@ -1,26 +1,29 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
-  SubnetId:
-    Type: "String"
   ClusterName:
     Type: "String"
-    Default: "Example_One_Node_Cluster"
+    Default: "Default_Cluster"
   EmrRelease:
     Type: "String"
-    Default: "emr-6.2.0"
+    Default: "emr-6.9.0"
     AllowedValues:
-    - "emr-6.2.0"
-    - "emr-5.32.0"
+    - "emr-6.9.0"
   ClusterInstanceType:
     Type: "String"
     Default: "m5.xlarge"
     AllowedValues:
     - "m5.xlarge"
     - "m5.2xlarge"
-    
+    - "m5.4xlarge"
+  CoreInstanceCount:
+    Type: Number
+    Default: 1
+    AllowedValues:
+    - 1
+    - 2
+    - 3
+
 Resources:
   EmrCluster:
     Type: AWS::EMR::Cluster
@@ -30,21 +33,44 @@ Resources:
       - Name: Livy
       - Name: JupyterEnterpriseGateway
       - Name: Hive
-      EbsRootVolumeSize: '10'
+      - Name: Presto
+      Configurations:
+      - Classification: presto-connector-hive
+        ConfigurationProperties:
+          hive.metastore: glue
+      - Classification: livy-conf
+        ConfigurationProperties:
+          livy.server.session.timeout: '8h'
+      BootstrapActions:
+      - Name: Install Additional Packages
+        ScriptBootstrapAction:
+          Path: s3://wildwesttech-emr-studio-resources-dev/bootstrap-scripts/bootstrap.sh
+      EbsRootVolumeSize: '15'
+      AutoTerminationPolicy:
+        IdleTimeout: 7200
       Name: !Ref ClusterName
-      JobFlowRole: EMR_EC2_DefaultRole
+      Tags:
+        - Key: type
+          Value: admin
+      JobFlowRole: EMR_EC2_Admin_Role
       ServiceRole: EMR_DefaultRole
       ReleaseLabel: !Ref EmrRelease
       VisibleToAllUsers: true
       LogUri: 
-        Fn::Sub: 's3://aws-logs-${AWS::AccountId}-${AWS::Region}/elasticmapreduce/'
+        Fn::Sub: 's3://wildwesttech-logs-dev/elasticmapreduce/'
       Instances:
         TerminationProtected: false
         Ec2SubnetId: 'subnet-099efa89d64903f8b'
         MasterInstanceGroup:
           InstanceCount: 1
           InstanceType: !Ref ClusterInstanceType
-
+        CoreInstanceGroup:
+          InstanceCount: !Ref CoreInstanceCount
+          InstanceType: !Ref ClusterInstanceType
+          Market: ON_DEMAND
+          Name: Core
+       
+ 
 Outputs:
   ClusterId:
     Value:
