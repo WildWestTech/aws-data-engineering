@@ -9,7 +9,3 @@ resource "aws_emr_studio" "DataEngineering" {
   subnet_ids                  = [data.aws_subnet.Private-1A.id]
   vpc_id                      =  data.aws_vpc.main.id
 }
-
-#studio is in                  'subnet-07c7578426ed4f1f1' 'Private-1C'
-#cluster went automatically to 'subnet-07c7578426ed4f1f1' 'Private-1C'
-#was previously hard-coding to 'subnet-099efa89d64903f8b'
