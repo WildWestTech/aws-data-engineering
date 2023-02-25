@@ -12,6 +12,7 @@ variable "bucket_list" {
     "emr-studio-workspace",
     "emr-studio-resources",
     "service-catalog",
-    "logs"
+    "logs",
+    "mwaa"
     ]
 }
