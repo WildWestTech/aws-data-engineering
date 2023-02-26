@@ -10,4 +10,14 @@
 - https://docs.aws.amazon.com/mwaa/latest/userguide/networking-about.html
 
 ### Networking Requirements (Public)
-- 
+- VPC
+- Private Subnet (AZ1)-> NAT Gateway (in Public Subnet 1) -> Public Subnet (AZ1) -> IGW (only one per VPC)
+- Private Subnet (AZ2)-> NAT Gateway (in Public Subnet 2) -> Public Subnet (AZ2) -> IGW (only one per VPC)
+- Note on Routing Tables:
+    -  I was originally placing all private subnets in a private subnet routing table, when most of my private resources were not being routed to a NAT Gateway.  B/C MWAA requires this routing, I am splitting my route tables by subnet/AZ.
+- Note on Access:
+    - Taking the Public Approach may cauase some concerns.  However, MWAA is only available via AWS SSO, so that should relieve some concerns.  
+
+### Newtworking Requirements (Private)
+- The private approach would require several additional VPC endpionts.  And because this is an expensive service for a lab environment, I felt the Public approach was sufficient.
+- Instead, I will likely be using airflow in an inexpensive ec2 instance.  For that, I will be placing my ec2 in a private subnet and accessing it only over VPN.

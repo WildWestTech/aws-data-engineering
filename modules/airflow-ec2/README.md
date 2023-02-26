@@ -76,3 +76,43 @@ Most of this project so far has been terraform/code-first.  This one will be a b
 - cd airflow
 - airflow webserver &
 - airflow scheduler
+
+##### Create a Startup Script
+    nano startup_script.sh
+
+Paste this into the startup script:
+
+    #!/bin/bash
+
+    # Activate virtual environment
+    source venv/bin/activate
+
+    # Change to the airflow directory
+    cd airflow
+
+    # Start the Airflow webserver in the background
+    airflow webserver &
+
+    # Start the Airflow scheduler
+    airflow scheduler
+
+- Press CTRL + O to save the file, then press ENTER.
+- Press CTRL + X to exit the nano editor.
+- Make the script executable by running the following command
+
+    chmod +x startup_script.sh
+
+- open cron
+    crontab -e
+
+- add an uncommented line
+    @reboot ./startup_script.sh
+
+##### Create a New AMI
+- We didn't have to create the first AMI, but that was where the turorial I was following had stopped.
+- I don't want to have to ssh into the machine, enable the virtual environment, and start AirFlow each time.
+- Adding these steps as a startup script, then creating a new AMI that handles all of that for us will make things much better.
+
+##### Sharing the AMI
+- If you plan on running this in multiple account (dev & prod), consider appending the environment to your key name.
+- You can also do as I did and share your AMI with your other account.  In my case, I developed this in dev and simply went to permissions and shared it with my prod account.
