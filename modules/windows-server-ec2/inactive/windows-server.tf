@@ -8,10 +8,4 @@ resource "aws_instance" "windows-server" {
   tags                = {
     Name = "windows-server"
   }
-  user_data = <<-EOF
-              <powershell>
-              net user Administrator ${random_password.windows_server_pwd.result}
-              </powershell>
-              EOF
-  depends_on = [random_password.windows_server_pwd]
 }
